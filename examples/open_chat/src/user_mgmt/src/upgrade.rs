@@ -1,5 +1,5 @@
 use ic_cdk_macros::*;
-use crate::user_data::UserData;
+use crate::domain::user_data::UserData;
 
 #[pre_upgrade]
 fn pre_upgrade() {

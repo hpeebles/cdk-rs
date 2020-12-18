@@ -1,5 +1,5 @@
 use ic_cdk::storage;
-use crate::user_data::{SetUsernameResponse, UserData};
+use crate::domain::user_data::{SetUsernameResponse, UserData};
 
 pub fn update(username: String) -> bool {
     let principal = ic_cdk::caller();

@@ -1,5 +1,5 @@
 use ic_cdk::storage;
-use crate::user_data::UserData;
+use crate::domain::user_data::UserData;
 
 pub fn query() -> Option<String> {
     let principal = ic_cdk::caller();
