@@ -25,5 +25,4 @@ serde_tokenstream = "0.1.0"
 serde = "1.0.111"
 
 [features]
-default = ["redirect"]
 redirect = ["candid/cdk"]

@@ -18,6 +18,5 @@ cfg-if = "0.1.10"
 serde = "1.0.110"
 
 [features]
-default = ["redirect"]
 redirect = ["candid/cdk"]
 experimental = []
