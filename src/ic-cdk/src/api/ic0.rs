@@ -43,14 +43,14 @@ macro_rules! ic0_module {
     ( $(     ic0. $name: ident : ( $( $argname: ident : $argtype: ty ),* ) -> $rettype: tt ; )+ ) => {
 
         #[allow(improper_ctypes)]
-        #[cfg(target_arch = "wasm32")]
+        #[cfg(all(target_arch = "wasm32", not(feature = "wasi")))]
         #[link(wasm_import_module = "ic0")]
         extern "C" {
             $(pub(super) fn $name($( $argname: $argtype, )*) -> _ic0_module_ret!($rettype) ;)*
         }
 
         $(
-        #[cfg(not(target_arch = "wasm32"))]
+        #[cfg(not(all(target_arch = "wasm32", not(feature = "wasi"))))]
         pub(super) unsafe fn $name($( $argname: $argtype, )*) -> _ic0_module_ret!($rettype) {
             let _ = ( $( $argname, )* );  // make sure the arguments are used.
             panic!("{} should only be called inside canisters.", stringify!( $name ));
