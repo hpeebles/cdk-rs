@@ -2,6 +2,9 @@
 use crate::export::Principal;
 use std::convert::{TryFrom, TryInto};
 
+#[cfg(all(target_arch = "wasm32", feature = "wasi"))]
+pub mod wasi;
+
 pub mod call;
 pub mod stable;
 
