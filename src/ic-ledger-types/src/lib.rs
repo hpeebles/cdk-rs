@@ -1,5 +1,5 @@
+use candid::{CandidType, Principal};
 use ic_cdk::api::call::CallResult;
-use ic_cdk::export::candid::{CandidType, Principal};
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
 use std::fmt;
