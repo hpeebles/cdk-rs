@@ -512,6 +512,9 @@ fn build_200(
     if let Some(head) = certificate_header {
         headers.push(head);
     }
+    if let Some(head) = get_cache_header(key) {
+        headers.push(head);
+    }
 
     let streaming_strategy = create_strategy(asset, enc_name, enc, key, chunk_index);
 
@@ -603,6 +606,15 @@ fn build_http_response(path: &str, encodings: Vec<String>, index: usize) -> Http
 
         build_404(certificate_header)
     })
+}
+
+static NOT_CACHED: [&str; 4] = ["index.html", "sw.js", "sw.js.map", "version"];
+fn get_cache_header(key: &str) -> Option<(String, String)> {
+    if NOT_CACHED.iter().any(|v| key.ends_with(v)) {
+        None
+    } else {
+        Some(("Cache-Control".to_string(), "public, max-age=100000000, immutable".to_string()))
+    }
 }
 
 /// An iterator-like structure that decode a URL.
