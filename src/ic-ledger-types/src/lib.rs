@@ -422,11 +422,11 @@ pub async fn transfer(
 /// use ic_cdk::api::{caller, call::call};
 /// use ic_ledger_types::{Block, BlockIndex, GetBlocksArgs, MAINNET_LEDGER_CANISTER_ID, query_blocks};
 ///
-/// async fn get_blocks_since(block_index: BlockIndex, max_blocks: usize) -> Vec<Block> {
+/// async fn blocks_since(start: BlockIndex, max_blocks: usize) -> Vec<Block> {
 ///   query_blocks(
 ///     MAINNET_LEDGER_CANISTER_ID,
 ///     GetBlocksArgs {
-///         start: block_index,
+///         start,
 ///         length: max_blocks,
 ///     }
 ///   ).await.expect("call to ledger failed").blocks
@@ -437,6 +437,27 @@ pub async fn query_blocks(
     args: GetBlocksArgs,
 ) -> CallResult<QueryBlocksResponse> {
     let (result,) = ic_cdk::call(ledger_canister_id, "query_blocks", (args,)).await?;
+    Ok(result)
+}
+
+#[derive(Serialize, Deserialize, CandidType, Clone, Hash, Debug, PartialEq, Eq)]
+pub struct Symbol {
+    pub symbol: String,
+}
+
+/// Calls the "token_symbol" method on the specified canister.
+/// # Example
+/// ```no_run
+/// use candid::Principal;
+/// use ic_cdk::api::{caller, call::call};
+/// use ic_ledger_types::{Symbol, token_symbol};
+///
+/// async fn symbol(ledger_canister_id: Principal) -> String {
+///   token_symbol(ledger_canister_id).await.expect("call to ledger failed").symbol
+/// }
+/// ```
+pub async fn token_symbol(ledger_canister_id: Principal) -> CallResult<Symbol> {
+    let (result,) = ic_cdk::call(ledger_canister_id, "token_symbol", ()).await?;
     Ok(result)
 }
 
