@@ -502,19 +502,19 @@ pub struct Symbol {
     pub symbol: String,
 }
 
-/// Calls the "token_symbol" method on the specified canister.
+/// Calls the "symbol" method on the specified canister.
 /// # Example
 /// ```no_run
 /// use candid::Principal;
 /// use ic_cdk::api::{caller, call::call};
-/// use ic_ledger_types::{Symbol, token_symbol};
+/// use ic_ledger_types::{Symbol, symbol};
 ///
-/// async fn symbol(ledger_canister_id: Principal) -> String {
-///   token_symbol(ledger_canister_id).await.expect("call to ledger failed").symbol
+/// async fn token_symbol(ledger_canister_id: Principal) -> String {
+///   symbol(ledger_canister_id).await.expect("call to ledger failed").symbol
 /// }
 /// ```
-pub async fn token_symbol(ledger_canister_id: Principal) -> CallResult<Symbol> {
-    let (result,) = ic_cdk::call(ledger_canister_id, "token_symbol", ()).await?;
+pub async fn symbol(ledger_canister_id: Principal) -> CallResult<Symbol> {
+    let (result,) = ic_cdk::call(ledger_canister_id, "symbol", ()).await?;
     Ok(result)
 }
 
