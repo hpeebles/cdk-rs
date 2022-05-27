@@ -176,7 +176,10 @@ fn dfn_macro(
         quote! {}
     } else if let Some(deserializer) = attrs.deserializer {
         let deserializer_ident = syn::Ident::new(&deserializer, Span::call_site());
-        quote! { let ( #( #arg_tuple, )* ) = #deserializer_ident (&ic_cdk::api::call::arg_data_raw()); }
+        match arg_count {
+            1 => quote! { let #arg_tuple = #deserializer_ident (&ic_cdk::api::call::arg_data_raw()); }
+            _ => quote! { let ( #( #arg_tuple, )* ) = #deserializer_ident (&ic_cdk::api::call::arg_data_raw()); }
+        }
     } else {
         quote! { let ( #( #arg_tuple, )* ) = ic_cdk::api::call::arg_data(); }
     };
