@@ -10,7 +10,19 @@ use syn::{spanned::Spanned, FnArg, ItemFn, Pat, PatIdent, PatType, ReturnType, S
 struct ExportAttributes {
     pub name: Option<String>,
     pub guard: Option<String>,
+    /// The name of the function to use to serialize the response to bytes, if none, the response
+    /// will be serialized using candid.
+    /// `fn<T>(response: T) -> Vec<u8>`
     pub serializer: Option<String>,
+    /// The name of the function to use to deserialize the request from bytes, if none, the request
+    /// will be deserialized using candid.
+    ///
+    /// If the request takes a single arg, the deserializer function must return that arg.
+    /// fn<T>(bytes: &[u8]) -> T
+    ///
+    /// If the request takes multiple args, the deserializer function must return a tuple containing
+    /// each of the args in turn.
+    /// fn<T1, T2>(bytes: &[u8]) -> (T1, T2)
     pub deserializer: Option<String>,
     #[serde(default)]
     pub manual_reply: bool,
@@ -167,10 +179,7 @@ fn dfn_macro(
         quote! {}
     } else if let Some(serializer) = attrs.serializer {
         let serializer_ident = syn::Ident::new(&serializer, Span::call_site());
-        match return_length {
-            0 => quote! { ic_cdk::api::call::reply_raw(&#serializer_ident (())) },
-            _ => quote! { ic_cdk::api::call::reply_raw(&#serializer_ident (result)) },
-        }
+        quote! { ic_cdk::api::call::reply_raw(&#serializer_ident (result)) }
     } else {
         match return_length {
             0 => quote! { ic_cdk::api::call::reply(()) },
