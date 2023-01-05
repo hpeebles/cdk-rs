@@ -203,8 +203,8 @@ fn update_ic0_timer() {
     TIMERS.with(|timers| {
         let timers = timers.borrow();
         let soonest_timer = timers.peek().map_or(0, |timer| timer.time);
-        tracing::info!(soonest_timer, "Calling 'global_timer_set'");
-        unsafe { ic0::global_timer_set(soonest_timer as i64) };
+        let previous = unsafe { ic0::global_timer_set(soonest_timer as i64) };
+        tracing::info!(soonest_timer, previous, "Called 'global_timer_set'");
     });
 }
 
