@@ -23,6 +23,7 @@ ic0 = { path = "../ic0", version = "0.18.4" }
 ic-cdk-macros = { path = "../ic-cdk-macros", version = "0.6.7" }
 slotmap = { version = "1.0.6", optional = true }
 futures = { version = "0.3.25", optional = true }
+tracing = "0.1.37"
 
 [features]
 timers = ["dep:slotmap", "dep:futures"]

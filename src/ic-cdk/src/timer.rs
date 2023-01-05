@@ -63,6 +63,7 @@ impl Eq for Timer {}
 // This function is called by the IC at or after the timestamp provided to `ic0.global_timer_set`.
 #[export_name = "canister_global_timer"]
 extern "C" fn global_timer() {
+    tracing::info!("'canister_global_timer' invoked");
     crate::setup();
     crate::spawn(async {
         // All the calls are made first, according only to the timestamp we *started* with, and then all the results are awaited.
@@ -202,6 +203,7 @@ fn update_ic0_timer() {
     TIMERS.with(|timers| {
         let timers = timers.borrow();
         let soonest_timer = timers.peek().map_or(0, |timer| timer.time);
+        tracing::info!(soonest_timer, "Calling 'global_timer_set'");
         unsafe { ic0::global_timer_set(soonest_timer as i64) };
     });
 }
