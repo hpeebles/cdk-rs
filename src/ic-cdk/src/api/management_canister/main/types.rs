@@ -74,6 +74,7 @@ pub struct InstallCodeArgument {
     pub wasm_module: WasmModule,
     /// The argument to be passed to `canister_init` or `canister_post_upgrade`.
     pub arg: Vec<u8>,
+    pub unsafe_drop_stable_memory: Option<bool>,
 }
 
 /// A wrapper of canister id.
