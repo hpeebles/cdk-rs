@@ -34,7 +34,6 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use syn::Error;
 
 mod export;
-mod import;
 
 // To generate unique identifiers for functions and arguments
 static NEXT_ID: AtomicU32 = AtomicU32::new(0);
@@ -433,34 +432,4 @@ pub fn heartbeat(attr: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro_attribute]
 pub fn inspect_message(attr: TokenStream, item: TokenStream) -> TokenStream {
     handle_debug_and_errors(export::ic_inspect_message, "ic_inspect_message", attr, item)
-}
-
-/// Import another canister as a rust struct.
-///
-/// All public interfaces defined in corresponding candid file can be accessed through the annotated struct.
-///
-/// # Example
-///
-/// You can specify the canister with it's name.
-///
-/// Please be noted that this approach relies on the project organization by [dfx](https://github.com/dfinity/sdk).
-///
-/// During `dfx build`, the imported canister will be correctly resolved.
-///
-/// ```rust,ignore
-/// # use ic_cdk::import;
-/// #[import(canister = "some_canister")]
-/// struct SomeCanister;
-/// ```
-///
-/// Or you can specify both the `canister_id` and the `candid_path`.
-///
-/// ```rust,ignore
-/// # use ic_cdk::import;
-/// #[import(canister_id = "abcde-cai", candid_path = "path/to/some_canister.did")]
-/// struct SomeCanister;
-/// ```
-#[proc_macro_attribute]
-pub fn import(attr: TokenStream, item: TokenStream) -> TokenStream {
-    handle_debug_and_errors(import::ic_import, "ic_import", attr, item)
 }

@@ -23,5 +23,5 @@ sha2 = "0.10"
 hex = "0.4"
 serde_cbor = "0.11"
 ic-cdk = { path = "../../src/ic-cdk", version = "0.9" }
-candid = "0.8"
+candid = "0.9"
 serde = "1"

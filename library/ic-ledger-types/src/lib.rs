@@ -14,6 +14,7 @@ use std::fmt::{self, Display, Formatter};
 use std::ops::{Add, AddAssign, Sub, SubAssign};
 
 use candid::{types::reference::Func, CandidType, Principal};
+use candid::types::{FuncMode, TypeInner};
 use serde::{Deserialize, Serialize};
 use serde_bytes::ByteBuf;
 use sha2::Digest;
@@ -653,11 +654,11 @@ impl From<QueryArchiveFn> for Func {
 
 impl CandidType for QueryArchiveFn {
     fn _ty() -> candid::types::Type {
-        candid::types::Type::Func(candid::types::Function {
-            modes: vec![candid::parser::types::FuncMode::Query],
+        TypeInner::Func(candid::types::Function {
+            modes: vec![FuncMode::Query],
             args: vec![GetBlocksArgs::_ty()],
             rets: vec![GetBlocksResult::_ty()],
-        })
+        }).into()
     }
 
     fn idl_serialize<S>(&self, serializer: S) -> Result<(), S::Error>

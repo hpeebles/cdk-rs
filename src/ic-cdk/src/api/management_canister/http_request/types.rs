@@ -1,9 +1,6 @@
 use crate::id;
-use candid::{
-    parser::types::FuncMode,
-    types::{Function, Serializer, Type},
-    CandidType, Func,
-};
+use candid::{types::{FuncMode, Function, Serializer, Type}, CandidType, Func};
+use candid::types::TypeInner;
 use serde::{Deserialize, Serialize};
 
 /// "transform" function of type: `func (http_request) -> (http_response) query`
@@ -12,11 +9,11 @@ pub struct TransformFunc(pub candid::Func);
 
 impl CandidType for TransformFunc {
     fn _ty() -> Type {
-        Type::Func(Function {
+        TypeInner::Func(Function {
             modes: vec![FuncMode::Query],
             args: vec![TransformArgs::ty()],
             rets: vec![HttpResponse::ty()],
-        })
+        }).into()
     }
 
     fn idl_serialize<S: Serializer>(&self, serializer: S) -> Result<(), S::Error> {

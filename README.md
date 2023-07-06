@@ -46,7 +46,7 @@ In Cargo.toml:
 crate-type = ["cdylib"]
 
 [dependencies]
-candid = "0.8.0" # this is required if you want to use the `#[import]` macro
+candid = "0.9.0" # this is required if you want to use the `#[import]` macro
 ic-cdk = "0.6"
 ```
 
