@@ -53,7 +53,7 @@ pub async fn update_settings(arg: UpdateSettingsArgument) -> CallResult<()> {
 }
 
 /// See [IC method `upload_chunk`](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-upload_chunk).
-pub async fn upload_chunk(arg: UploadChunkArgument) -> CallResult<(Vec<u8>,)> {
+pub async fn upload_chunk(arg: UploadChunkArgument) -> CallResult<(UploadChunkResponse,)> {
     call(Principal::management_canister(), "upload_chunk", (arg,)).await
 }
 

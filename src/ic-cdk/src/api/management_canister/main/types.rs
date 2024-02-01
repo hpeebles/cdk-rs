@@ -77,6 +77,13 @@ pub struct UploadChunkArgument {
     pub chunk: Vec<u8>,
 }
 
+/// Return type of [upload_chunk](super::upload_chunk).
+#[derive(CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone)]
+pub struct UploadChunkResponse {
+    /// The hash of the uploaded chunk
+    pub hash: Vec<u8>,
+}
+
 /// Argument type of [clear_chunk_store](super::clear_chunk_store).
 #[derive(CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone)]
 pub struct ClearChunkStoreArgument {
@@ -270,7 +277,7 @@ pub struct QueryStats {
     pub response_payload_bytes_total: candid::Nat,
 }
 
-/// Argument type of [canister_status](super::canister_status).
+/// Return type of [canister_status](super::canister_status).
 #[derive(
     CandidType, Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone,
 )]
