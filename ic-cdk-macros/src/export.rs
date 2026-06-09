@@ -258,10 +258,11 @@ fn dfn_macro(
     } else {
         quote! {
             let arg_bytes = #cratename::api::msg_arg_data();
+            let arg_bytes: &[u8] = if arg_bytes.is_empty() { b"DIDL\x00\x00" } else { &arg_bytes };
             on_complete_args.arg_bytes_len = arg_bytes.len() as u32;
             let mut decoder_config = ::candid::DecoderConfig::new();
             decoder_config.set_skipping_quota(10000);
-            let ( #( #arg_tuple, )* ) = ::candid::utils::decode_args_with_config(&arg_bytes, &decoder_config).unwrap();
+            let ( #( #arg_tuple, )* ) = ::candid::utils::decode_args_with_config(arg_bytes, &decoder_config).unwrap();
         }
     };
 
@@ -597,9 +598,10 @@ mod test {
             fn #fn_name() {
                 ::ic_cdk::futures::internals::in_query_executor_context(|| {
                     let arg_bytes = ::ic_cdk::api::msg_arg_data();
+                    let arg_bytes: &[u8] = if arg_bytes.is_empty() { b"DIDL\x00\x00" } else { &arg_bytes };
                     let mut decoder_config = ::candid::DecoderConfig::new();
                     decoder_config.set_skipping_quota(10000);
-                    let (a,) = ::candid::utils::decode_args_with_config(&arg_bytes, &decoder_config).unwrap();
+                    let (a,) = ::candid::utils::decode_args_with_config(arg_bytes, &decoder_config).unwrap();
                     let result = query(a);
                     let bytes: Vec<u8> = ::candid::utils::encode_one(()).unwrap();
                     ::ic_cdk::api::msg_reply(bytes);
@@ -636,9 +638,10 @@ mod test {
             fn #fn_name() {
                 ::ic_cdk::futures::internals::in_query_executor_context(|| {
                     let arg_bytes = ::ic_cdk::api::msg_arg_data();
+                    let arg_bytes: &[u8] = if arg_bytes.is_empty() { b"DIDL\x00\x00" } else { &arg_bytes };
                     let mut decoder_config = ::candid::DecoderConfig::new();
                     decoder_config.set_skipping_quota(10000);
-                    let (a, b,) = ::candid::utils::decode_args_with_config(&arg_bytes, &decoder_config).unwrap();
+                    let (a, b,) = ::candid::utils::decode_args_with_config(arg_bytes, &decoder_config).unwrap();
                     let result = query(a, b);
                     let bytes: Vec<u8> = ::candid::utils::encode_one(()).unwrap();
                     ::ic_cdk::api::msg_reply(bytes);
@@ -675,9 +678,10 @@ mod test {
             fn #fn_name() {
                 ::ic_cdk::futures::internals::in_query_executor_context(|| {
                     let arg_bytes = ::ic_cdk::api::msg_arg_data();
+                    let arg_bytes: &[u8] = if arg_bytes.is_empty() { b"DIDL\x00\x00" } else { &arg_bytes };
                     let mut decoder_config = ::candid::DecoderConfig::new();
                     decoder_config.set_skipping_quota(10000);
-                    let (a, b,) = ::candid::utils::decode_args_with_config(&arg_bytes, &decoder_config).unwrap();
+                    let (a, b,) = ::candid::utils::decode_args_with_config(arg_bytes, &decoder_config).unwrap();
                     let result = query(a, b);
                     let bytes: Vec<u8> = ::candid::utils::encode_one(result).unwrap();
                     ::ic_cdk::api::msg_reply(bytes);
