@@ -75,6 +75,11 @@ fn cancel_long() {
 }
 
 #[update]
+fn schedule_later() {
+    set_timer(Duration::from_secs(60), async { add_event("later") });
+}
+
+#[update]
 fn start_repeating() {
     let id = set_timer_interval(Duration::from_secs(1), async || {
         add_event("repeat");

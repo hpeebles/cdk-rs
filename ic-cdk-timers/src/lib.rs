@@ -196,6 +196,10 @@ pub fn set_timer_interval_serial(interval: Duration, func: impl AsyncFnMut() + '
 /// ```
 pub fn clear_timer(id: TimerId) {
     TASKS.with_borrow_mut(|tasks| tasks.remove(id));
+    // Outside replicated execution the global timer can't be set, and the change would be discarded anyway.
+    if ic0::in_replicated_execution() != 0 {
+        state::update_ic0_timer();
+    }
 }
 
 fn get_scheduled_time(delay: Duration) -> u64 {
