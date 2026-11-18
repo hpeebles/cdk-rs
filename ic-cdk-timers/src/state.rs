@@ -93,17 +93,15 @@ pub(crate) fn next_counter() -> u128 {
     })
 }
 
-/// Calls `ic0.global_timer_set` with the soonest timer in [`TIMERS`]. This is needed after inserting a timer, and after executing one.
+/// Calls `ic0.global_timer_set` with the soonest live timer in [`TIMERS`], or deactivates the global timer if there is
+/// none, whenever that differs from what it is set to. This is needed after inserting a timer, after executing one, and
+/// after canceling one.
 pub(crate) fn update_ic0_timer() {
-    TIMERS.with_borrow(|timers| {
+    TIMERS.with_borrow_mut(|timers| {
+        pop_canceled_timers(timers);
         let soonest_timer = timers.peek().map(|timer| timer.time);
-        let should_change = match (soonest_timer, MOST_RECENT.get()) {
-            (Some(timer), Some(recent)) => timer < recent,
-            (Some(_), None) => true,
-            _ => false,
-        };
-        if should_change {
-            ic0::global_timer_set(soonest_timer.unwrap());
+        if soonest_timer != MOST_RECENT.get() {
+            ic0::global_timer_set(soonest_timer.unwrap_or(0));
             MOST_RECENT.set(soonest_timer);
         }
     });
@@ -113,6 +111,21 @@ pub(crate) fn update_ic0_timer() {
 pub(crate) fn update_ic0_timer_clean() {
     MOST_RECENT.set(None);
     update_ic0_timer();
+}
+
+/// Pops canceled timers off the top of `timers`, returning whether it popped any. Canceling a timer removes its task at
+/// once but leaves its entry in the heap, which has no cheap removal; the entry is skipped when it is popped. Left at
+/// the top, though, it would set the global timer for a time nothing will run at.
+fn pop_canceled_timers(timers: &mut BinaryHeap<Timer>) -> bool {
+    let mut popped = false;
+    while let Some(timer) = timers.peek() {
+        if TASKS.with_borrow(|tasks| tasks.contains_key(timer.task)) {
+            break;
+        }
+        timers.pop();
+        popped = true;
+    }
+    popped
 }
 
 impl Task {

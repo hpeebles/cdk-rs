@@ -254,3 +254,43 @@ fn test_serial_timers_run_in_serial() {
         ["method repeat serial", "method repeat serial",]
     );
 }
+
+/// Reads the time the global timer is set for, leaving it set.
+fn armed_global_timer(pic: &PocketIc, canister_id: Principal) -> u64 {
+    let (armed,): (u64,) = update(pic, canister_id, "global_timer_set", (0u64,)).unwrap();
+    update::<_, (u64,)>(pic, canister_id, "global_timer_set", (armed,)).unwrap();
+    armed
+}
+
+#[test]
+fn test_canceling_the_soonest_timer_rearms_the_global_timer() {
+    let wasm = cargo_build_canister("timers");
+    let pic = pic_base().build();
+    let canister_id = pic.create_canister();
+    pic.add_cycles(canister_id, 2_000_000_000_000);
+    pic.install_canister(canister_id, wasm, vec![], None);
+    let start = pic.get_time().as_nanos_since_unix_epoch();
+
+    update::<_, ()>(&pic, canister_id, "schedule_later", ()).unwrap();
+    update::<_, ()>(&pic, canister_id, "schedule_long", ()).unwrap();
+    update::<_, ()>(&pic, canister_id, "cancel_long", ()).unwrap();
+
+    // Set for the 60s timer, not the canceled 9s one.
+    let armed = armed_global_timer(&pic, canister_id);
+    assert!(
+        armed > start + Duration::from_secs(30).as_nanos() as u64,
+        "the global timer is still set for the canceled timer: {armed}"
+    );
+
+    advance_and_tick(&pic, 10);
+    let (events,): (Vec<String>,) = query_candid(&pic, canister_id, "get_events", ()).unwrap();
+    assert!(events.is_empty(), "{events:?}");
+    advance_and_tick(&pic, 60);
+    let (events,): (Vec<String>,) = query_candid(&pic, canister_id, "get_events", ()).unwrap();
+    assert_eq!(events, ["later"]);
+
+    // Canceling the only timer deactivates the global timer.
+    update::<_, ()>(&pic, canister_id, "schedule_long", ()).unwrap();
+    update::<_, ()>(&pic, canister_id, "cancel_long", ()).unwrap();
+    assert_eq!(armed_global_timer(&pic, canister_id), 0);
+}
